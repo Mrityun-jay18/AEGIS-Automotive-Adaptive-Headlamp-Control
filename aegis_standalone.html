@@ -1,0 +1,3417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEGIS IoT Telematics Cloud | Smart Vehicle Adaptive Glare Platform</title>
+  <meta name="description" content="IoT Edge Telematics & Intelligent Glare Mitigation Simulator for STM32 Automotive ECU">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* ==========================================================================
+   AEGIS // IoT Telematics Cloud & Smart Vehicle ECU UI Design System
+   Industrial Connected Embedded Platform Theme
+   ========================================================================== */
+
+:root {
+  /* Industrial IoT Palette */
+  --bg-app: #0c1017;
+  --bg-card: #131822;
+  --bg-card-elevated: #1a2230;
+  --bg-subtle: #0f141d;
+  --border-card: #222c3c;
+  --border-focus: #14b8a6;
+  --border-light: rgba(255, 255, 255, 0.08);
+
+  /* Telemetry Accents */
+  --accent-teal: #14b8a6;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-crimson: #ef4444;
+
+  /* Text Colors */
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-dark: #475569;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Geometry */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+}
+
+/* Reset & Global */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.iot-platform {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  background-image: 
+    radial-gradient(circle at 10% 0%, rgba(20, 184, 166, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 100%, rgba(245, 158, 11, 0.03) 0%, transparent 40%);
+  background-attachment: fixed;
+}
+
+/* ==========================================================================
+   Header & IoT Gateway Strip
+   ========================================================================== */
+.iot-header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-card);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  gap: 20px;
+}
+
+.header-main-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iot-gateway-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gateway-icon {
+  font-size: 1.6rem;
+  background: rgba(20, 184, 166, 0.1);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+}
+
+.gateway-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.gateway-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gateway-title h1 {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.iot-node-chip {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  background: rgba(20, 184, 166, 0.12);
+  color: var(--accent-teal);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  font-weight: 600;
+}
+
+.gateway-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Connectivity Bar */
+.iot-connection-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-subtle);
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+}
+
+.conn-tile {
+  display: flex;
+  flex-direction: column;
+}
+
+.conn-lbl {
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.conn-val {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.conn-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-emerald);
+}
+
+.dot-live {
+  box-shadow: 0 0 8px var(--accent-emerald);
+  animation: pulse-conn 2s infinite ease-in-out;
+}
+
+@keyframes pulse-conn {
+  0%, 100% { opacity: 0.6; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.conn-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-card);
+}
+
+.tele-status-tag {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-teal);
+}
+
+/* Header Actions */
+.header-action-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iot-btn {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.iot-btn:hover {
+  background: #232c3d;
+  border-color: var(--accent-teal);
+  color: #fff;
+}
+
+.btn-video-launch {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(6, 182, 212, 0.25));
+  border-color: var(--accent-teal);
+  color: #fff;
+}
+
+.btn-video-launch:hover {
+  background: var(--accent-teal);
+  color: #000;
+  box-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+}
+
+.badge-new {
+  font-size: 0.6rem;
+  font-family: var(--font-mono);
+  background: var(--accent-emerald);
+  color: #000;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-weight: 800;
+}
+
+.btn-danger-subtle:hover {
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+}
+
+/* ==========================================================================
+   VIDEO THEATER MODAL (CINEMA PRESENTATION)
+   ========================================================================== */
+.video-theater-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.theater-backdrop {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(4, 6, 10, 0.88);
+  backdrop-filter: blur(12px);
+}
+
+.theater-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1000px;
+  background: var(--bg-card);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(20, 184, 166, 0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.theater-header {
+  padding: 12px 18px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theater-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theater-title-group h2 {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.theater-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  box-shadow: 0 0 8px var(--accent-teal);
+  animation: pulse-conn 1.5s infinite;
+}
+
+.theater-tag {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.theater-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theater-action-btn {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-card);
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.theater-action-btn:hover {
+  background: var(--accent-teal);
+  color: #000;
+}
+
+.theater-close-btn {
+  background: transparent;
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: all 0.15s;
+}
+
+.theater-close-btn:hover {
+  background: var(--accent-rose);
+  color: #fff;
+  border-color: var(--accent-rose);
+}
+
+/* Viewport & Subtitles */
+.theater-viewport {
+  position: relative;
+  background: #020408;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+}
+
+#videoCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.theater-captions-box {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 820px;
+  background: rgba(8, 12, 18, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 10px 18px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.caption-speaker-badge {
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  color: var(--accent-teal);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.caption-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f8fafc;
+  line-height: 1.4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.theater-scene-tag {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: rgba(15, 20, 29, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-teal);
+  letter-spacing: 0.5px;
+}
+
+.recording-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(239, 68, 68, 0.85);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: var(--radius-xs);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rec-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse-conn 0.8s infinite;
+}
+
+/* Video Controls Bar */
+.theater-controls-bar {
+  padding: 10px 16px;
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.controls-left, .controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-btn {
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-card);
+  color: #cbd5e1;
+  padding: 5px 10px;
+  border-radius: var(--radius-xs);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.player-btn:hover {
+  background: var(--bg-card);
+  color: #fff;
+  border-color: var(--accent-teal);
+}
+
+.player-btn.active-toggle {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+}
+
+.video-time-display {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.video-progress-track {
+  flex: 1;
+  height: 6px;
+  background: #1c2432;
+  border-radius: 3px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.video-progress-fill {
+  height: 100%;
+  background: var(--accent-teal);
+  box-shadow: 0 0 8px var(--accent-teal);
+  transition: width 0.1s linear;
+}
+
+/* ==========================================================================
+   Dashboard Grid Container
+   ========================================================================== */
+.iot-grid-container {
+  flex: 1;
+  max-width: 1540px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.viewport-telemetry-row {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 16px;
+}
+
+.controls-telemetry-row {
+  display: grid;
+  grid-template-columns: 1.15fr 1.35fr;
+  gap: 16px;
+}
+
+.telemetry-cloud-row {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 16px;
+}
+
+/* IoT Cards General */
+.iot-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-bar {
+  padding: 10px 16px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-icon {
+  font-size: 1.1rem;
+}
+
+.card-heading {
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.card-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Badges */
+.iot-badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.3px;
+}
+
+.badge-teal {
+  background: rgba(20, 184, 166, 0.12);
+  color: var(--accent-teal);
+  border: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--accent-crimson);
+  border: 1px solid var(--accent-crimson);
+  animation: blink-red 1s infinite alternate;
+}
+
+.badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-gray {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+}
+
+@keyframes blink-red {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   Road Vision Simulation Viewport
+   ========================================================================== */
+.canvas-stage {
+  position: relative;
+  background: #04070e;
+  min-height: 360px;
+}
+
+#roadCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viewport-hud {
+  position: absolute;
+  top: 12px;
+  display: flex;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.viewport-hud.top-left { left: 14px; }
+.viewport-hud.top-right { right: 14px; }
+
+.hud-chip {
+  background: rgba(15, 20, 29, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xs);
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-sub {
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.hud-main {
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #fff;
+}
+
+.scene-interactive-deck {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.deck-label {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  margin-right: 4px;
+}
+
+.deck-btn {
+  background: rgba(19, 24, 34, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 5px 11px;
+  border-radius: var(--radius-xs);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.deck-btn:hover {
+  background: rgba(20, 184, 166, 0.2);
+  border-color: var(--accent-teal);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Virtual In-Dash Hardware & Actuator Rack
+   ========================================================================== */
+.hardware-deck-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.virtual-oled-container {
+  display: flex;
+  justify-content: center;
+}
+
+.oled-frame {
+  background: #090d14;
+  border: 2px solid #1c2432;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  width: 100%;
+}
+
+.oled-raster-screen {
+  background: #02060c;
+  border: 1px solid #0d1e30;
+  border-radius: 3px;
+  padding: 8px 10px;
+  font-family: var(--font-mono);
+  color: #38bdf8;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 98px;
+  box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.1);
+}
+
+.oled-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: #7dd3fc;
+}
+
+.oled-hr {
+  height: 1px;
+  background: #0284c7;
+  opacity: 0.3;
+  margin: 1px 0;
+}
+
+.oled-state-main {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.oled-state-sub {
+  font-size: 0.7rem;
+  color: #38bdf8;
+}
+
+.oled-gauge-grid {
+  display: flex;
+  gap: 8px;
+  margin: 3px 0;
+}
+
+.oled-gauge {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6rem;
+}
+
+.g-track {
+  flex: 1;
+  height: 4px;
+  background: #0d1e30;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.g-fill {
+  height: 100%;
+  background: #38bdf8;
+  box-shadow: 0 0 4px #38bdf8;
+}
+
+.oled-footer {
+  font-size: 0.62rem;
+  color: #34d399;
+}
+
+.oled-footer.error-pulse {
+  color: #f43f5e;
+  animation: blink-red 0.5s infinite alternate;
+}
+
+/* Actuator Tile List */
+.actuator-rack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.actuator-tile {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lamp-emitter {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #101622;
+  border: 1px solid #222d3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+}
+
+.lamp-filament {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #334155;
+  transition: all 0.25s;
+}
+
+.lamp-white.active {
+  background: #ffffff;
+  border-color: #f8fafc;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.95);
+}
+.lamp-white.active .lamp-filament { background: #ffffff; }
+
+.lamp-white-dim.active {
+  background: #cbd5e1;
+  border-color: #94a3b8;
+  box-shadow: 0 0 10px rgba(203, 213, 225, 0.7);
+}
+.lamp-white-dim.active .lamp-filament { background: #ffffff; }
+
+.lamp-amber.active {
+  background: #f59e0b;
+  border-color: #fbbf24;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.9);
+}
+.lamp-amber.active .lamp-filament { background: #fef08a; }
+
+.lamp-crimson.active {
+  background: #ef4444;
+  border-color: #f87171;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.9);
+  animation: pulse-lamp 0.3s infinite alternate;
+}
+.lamp-crimson.active .lamp-filament { background: #fee2e2; }
+
+@keyframes pulse-lamp {
+  from { transform: scale(0.95); }
+  to { transform: scale(1.1); }
+}
+
+.actuator-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.act-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pin-pill {
+  font-size: 0.58rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.act-stats {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Continuous Physical Factor Sliders & Calibration
+   ========================================================================== */
+.card-content-stack {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sensor-slider-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sensor-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.sensor-metric {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.iot-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: #1c2432;
+  outline: none;
+}
+
+.iot-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-teal);
+  border: 2px solid #fff;
+  transition: transform 0.1s;
+}
+
+.iot-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.sensor-preset-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pill-btn {
+  flex: 1;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  padding: 4px 6px;
+  font-size: 0.68rem;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.pill-btn:hover {
+  background: var(--bg-card-elevated);
+  border-color: var(--accent-teal);
+  color: #fff;
+}
+
+/* Manual Override Box */
+.override-box-strip {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.override-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.override-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.override-desc {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+.iot-toggle-switch {
+  position: relative;
+  width: 38px;
+  height: 20px;
+}
+
+.iot-toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #1e293b;
+  border-radius: 20px;
+  transition: .2s;
+  border: 1px solid var(--border-card);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #94a3b8;
+  border-radius: 50%;
+  transition: .2s;
+}
+
+.iot-toggle-switch input:checked + .toggle-slider {
+  background-color: var(--accent-amber);
+}
+
+.iot-toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+  background-color: #fff;
+}
+
+/* ==========================================================================
+   Signal Oscilloscope Screen
+   ========================================================================== */
+.scope-legend-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+}
+
+.legend-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chip-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.color-raw { background: #f59e0b; }
+.color-filt { background: #14b8a6; }
+.color-lim { background: #ef4444; }
+
+.scope-screen-wrapper {
+  background: #02050a;
+  padding: 6px 10px;
+}
+
+#scopeCanvas {
+  display: block;
+  width: 100%;
+  height: 210px;
+}
+
+.scope-meta-deck {
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border-card);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.depth-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.picker-label {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.picker-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.depth-opt-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.depth-opt-btn.active {
+  background: rgba(20, 184, 166, 0.15);
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+  font-weight: 700;
+}
+
+.scope-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-lbl {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.stat-val {
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Live MQTT Telemetry Stream & Fault Injection
+   ========================================================================== */
+.terminal-body {
+  padding: 12px 14px;
+  background: #05080e;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  min-height: 140px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: #38bdf8;
+  line-height: 1.4;
+}
+
+#mqtt-terminal-stream {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.diag-card-content {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fault-button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.fault-action-btn {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.fault-action-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fff;
+}
+
+.fault-action-btn.active-fault {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--accent-crimson);
+  color: var(--accent-crimson);
+  font-weight: 700;
+}
+
+.btn-clear-all {
+  grid-column: span 2;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+  color: var(--accent-emerald);
+}
+
+.btn-clear-all:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: var(--accent-emerald);
+  color: #fff;
+}
+
+/* Telemetry Table */
+.iot-tele-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.iot-tele-table th {
+  text-align: left;
+  padding: 6px 8px;
+  background: var(--bg-subtle);
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.iot-tele-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-family: var(--font-mono);
+}
+
+.table-badge {
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.badge-ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+}
+
+.badge-err {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--accent-crimson);
+}
+
+.badge-info {
+  background: rgba(20, 184, 166, 0.15);
+  color: var(--accent-teal);
+}
+
+/* ==========================================================================
+   Bottom Pipeline Architecture
+   ========================================================================== */
+.iot-footer-pipeline {
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-card);
+  padding: 10px 24px;
+}
+
+.pipeline-flow {
+  max-width: 1540px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.flow-step {
+  flex: 1;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xs);
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.45;
+  transition: all 0.2s;
+}
+
+.flow-step.active-step {
+  opacity: 1;
+  background: rgba(20, 184, 166, 0.12);
+  border-color: var(--accent-teal);
+}
+
+.flow-step.step-danger.active-step {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: var(--accent-crimson);
+}
+
+.step-icon {
+  font-size: 1.1rem;
+}
+
+.step-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-name {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #fff;
+}
+
+.step-desc {
+  font-size: 0.58rem;
+  color: var(--text-dim);
+}
+
+.flow-arrow {
+  color: var(--border-card);
+  font-size: 0.85rem;
+}
+
+/* Text Utilities */
+.text-teal { color: var(--accent-teal); }
+.text-emerald { color: var(--accent-emerald); }
+.text-amber { color: var(--accent-amber); }
+.text-right { text-align: right; }
+.hidden { display: none !important; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .viewport-telemetry-row, .controls-telemetry-row, .telemetry-cloud-row {
+    grid-template-columns: 1fr;
+  }
+  .pipeline-flow {
+    flex-wrap: wrap;
+  }
+}
+
+</style>
+</head>
+<body class="iot-platform">
+
+  <!-- Top IoT Edge Gateway Header -->
+  <header class="iot-header">
+    <div class="header-main-brand">
+      <div class="iot-gateway-badge">
+        <span class="gateway-icon">🛰️</span>
+        <div class="gateway-details">
+          <div class="gateway-title">
+            <h1>AEGIS // IoT TELEMATICS</h1>
+            <span class="iot-node-chip">NODE: CIT-ACT-ECU#042</span>
+          </div>
+          <span class="gateway-subtitle">Connected STM32 ARM Cortex-M4 Automotive Lighting Controller</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- IoT Connectivity & Telemetry Status -->
+    <div class="iot-connection-strip">
+      <div class="conn-tile">
+        <span class="conn-lbl">MQTT BROKER</span>
+        <span class="conn-val text-emerald"><span class="conn-dot dot-live"></span> CONNECTED</span>
+      </div>
+      <div class="conn-divider"></div>
+      <div class="conn-tile">
+        <span class="conn-lbl">CAN-BUS NETWORK</span>
+        <span class="conn-val">500 kbps (11-bit)</span>
+      </div>
+      <div class="conn-divider"></div>
+      <div class="conn-tile">
+        <span class="conn-lbl">PACKET LATENCY</span>
+        <span class="conn-val text-teal" id="tele-latency">8.4 ms</span>
+      </div>
+      <div class="conn-divider"></div>
+      <div class="conn-tile">
+        <span class="conn-lbl">EDGE SYSTEM STATE</span>
+        <span class="tele-status-tag" id="header-state-tag">ADAPTIVE HIGH BEAM</span>
+      </div>
+    </div>
+
+    <!-- Quick Tools & Video Presentation Button -->
+    <div class="header-action-group">
+      <button class="iot-btn btn-video-launch" id="btn-open-video-modal" title="Watch Automated Project Video with Voiceover & Captions">
+        <span class="video-btn-icon">🎬</span>
+        <span>Watch Video Explainer</span>
+        <span class="badge-new">HD</span>
+      </button>
+      <button class="iot-btn" id="sound-btn" title="Toggle Piezo Buzzer Audio">
+        <span id="sound-icon">🔊</span>
+        <span id="sound-label">Buzzer: ON</span>
+      </button>
+      <button class="iot-btn btn-danger-subtle" id="reset-all-btn" title="Reset All Sensor Calibration">
+        <span>↺ Reset Node</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CINEMA THEATER MODAL: Automated Explainer Video with Voiceover & Captions
+       ========================================================================== -->
+  <div class="video-theater-modal hidden" id="video-theater-modal">
+    <div class="theater-backdrop" id="theater-backdrop"></div>
+    
+    <div class="theater-card">
+      <div class="theater-header">
+        <div class="theater-title-group">
+          <span class="theater-live-dot"></span>
+          <h2>AEGIS Technical Video Presentation</h2>
+          <span class="theater-tag">50s • AI Narration & Live DSP Visuals</span>
+        </div>
+        <div class="theater-top-actions">
+          <button class="theater-action-btn" id="btn-download-video" title="Record & Download as Video (.webm)">
+            <span>⬇️ Export Video File</span>
+          </button>
+          <button class="theater-close-btn" id="btn-close-video-modal" title="Close Video Player">✕</button>
+        </div>
+      </div>
+
+      <div class="theater-viewport">
+        <!-- 720p HD Video Presentation Canvas -->
+        <canvas id="videoCanvas" width="1280" height="720"></canvas>
+
+        <!-- Dynamic Closed Captions & Subtitles Display -->
+        <div class="theater-captions-box">
+          <div class="caption-speaker-badge">VOICEOVER NARRATION</div>
+          <p class="caption-text" id="video-caption-text">Welcome to AEGIS - Adaptive Electronic Glare Intelligence System powered by STM32 ARM Cortex-M4.</p>
+        </div>
+
+        <!-- Video Scene Chapter Tag -->
+        <div class="theater-scene-tag" id="video-scene-indicator">CHAPTER 1: INTRODUCTION & HAZARDS</div>
+
+        <!-- Recording Indicator -->
+        <div class="recording-badge hidden" id="recording-badge">
+          <span class="rec-dot"></span> RECORDING VIDEO STREAM...
+        </div>
+      </div>
+
+      <!-- Video Player Control Bar -->
+      <div class="theater-controls-bar">
+        <div class="controls-left">
+          <button class="player-btn" id="btn-video-play-pause">⏸️ Pause</button>
+          <button class="player-btn" id="btn-video-restart">↺ Restart</button>
+          <span class="video-time-display" id="video-time-display">00:00 / 00:50</span>
+        </div>
+
+        <!-- Scrubber Progress Bar -->
+        <div class="video-progress-track" id="video-progress-track">
+          <div class="video-progress-fill" id="video-progress-fill" style="width: 0%;"></div>
+        </div>
+
+        <div class="controls-right">
+          <button class="player-btn active-toggle" id="btn-video-caption-toggle">💬 CC: ON</button>
+          <button class="player-btn active-toggle" id="btn-video-audio-toggle">🔊 Voiceover: ON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main IoT Dashboard Grid -->
+  <main class="iot-grid-container">
+
+    <!-- TOP ROW: Panoramic Simulation & Real-Time Physics Telemetry -->
+    <section class="viewport-telemetry-row">
+      
+      <!-- 1. Interactive 3D Night Road Driving Simulation -->
+      <div class="iot-card road-viewport-card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="card-icon">🚘</span>
+            <span class="card-heading">Edge Vehicle Vision & Glare Physics Viewport</span>
+          </div>
+          <div class="card-bar-right">
+            <span class="iot-badge badge-teal" id="badge-beam-mode">HIGH: 100% | LOW: 30%</span>
+            <span class="iot-badge badge-amber" id="badge-weather-mode">WEATHER: CLEAR</span>
+            <span class="iot-badge badge-red hidden" id="badge-failsafe-mode">⚠️ FAIL-SAFE TRIGGERED</span>
+          </div>
+        </div>
+
+        <div class="canvas-stage">
+          <canvas id="roadCanvas" width="940" height="360"></canvas>
+
+          <!-- Floating Telemetry HUD Tiles -->
+          <div class="viewport-hud top-left">
+            <div class="hud-chip">
+              <span class="hud-sub">ONCOMING CAR DISTANCE</span>
+              <span class="hud-main" id="hud-car-dist">-- m (Clear Road)</span>
+            </div>
+            <div class="hud-chip">
+              <span class="hud-sub">FRONT PHOTODIODE SENSOR</span>
+              <span class="hud-main" id="hud-glare-lux">450 ADC (12.4 Lux)</span>
+            </div>
+          </div>
+
+          <div class="viewport-hud top-right">
+            <div class="hud-chip text-right">
+              <span class="hud-sub">HEADLIGHT PROJECTION REACH</span>
+              <span class="hud-main text-teal" id="hud-reach-dist">195 meters</span>
+            </div>
+            <div class="hud-chip text-right">
+              <span class="hud-sub">ENERGY SAVED VS HALOGEN</span>
+              <span class="hud-main text-emerald" id="hud-energy-saved">64.2%</span>
+            </div>
+          </div>
+
+          <!-- Scene Simulation Controls Bar -->
+          <div class="scene-interactive-deck">
+            <span class="deck-label">Traffic Simulation:</span>
+            <button class="deck-btn" id="btn-spawn-car">🚗 Oncoming Sedan</button>
+            <button class="deck-btn" id="btn-spawn-truck">🚛 High-Beam SUV/Truck</button>
+            <button class="deck-btn" id="btn-auto-traffic">🔄 Continuous Traffic Loop: <strong id="val-auto-traffic">OFF</strong></button>
+            <button class="deck-btn" id="btn-pulse-streetlight">💡 150ms Streetlight Spike</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Real-Time Hardware & Driver Deck (OLED + MOSFETs + Buzzer) -->
+      <div class="iot-card hardware-deck-card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="card-icon">🎛️</span>
+            <span class="card-heading">Vehicle In-Dash Node & Actuators</span>
+          </div>
+          <span class="iot-badge badge-gray">I2C & MOSFET Stage</span>
+        </div>
+
+        <div class="hardware-deck-body">
+          
+          <!-- Virtual 0.96" SSD1306 OLED Display -->
+          <div class="virtual-oled-container">
+            <div class="oled-frame">
+              <div class="oled-raster-screen">
+                <div class="oled-row oled-header">
+                  <span>AEGIS ECU // IoT CLOUD</span>
+                  <span id="oled-clock">00:00:00</span>
+                </div>
+                <div class="oled-hr"></div>
+                <div class="oled-row oled-state-main" id="oled-state-line">BEAM: ADAPTIVE HIGH</div>
+                <div class="oled-row oled-state-sub" id="oled-weather-line">MODE: CLEAR / DRY</div>
+                
+                <!-- Dynamic Mini Bars -->
+                <div class="oled-gauge-grid">
+                  <div class="oled-gauge">
+                    <span class="g-lbl">LGT</span>
+                    <div class="g-track"><div class="g-fill" id="oled-bar-light" style="width: 12%;"></div></div>
+                  </div>
+                  <div class="oled-gauge">
+                    <span class="g-lbl">RAIN</span>
+                    <div class="g-track"><div class="g-fill" id="oled-bar-rain" style="width: 0%;"></div></div>
+                  </div>
+                  <div class="oled-gauge">
+                    <span class="g-lbl">PWM</span>
+                    <div class="g-track"><div class="g-fill" id="oled-bar-pwm" style="width: 100%;"></div></div>
+                  </div>
+                </div>
+
+                <div class="oled-footer" id="oled-diag-line">DIAGNOSTIC: ALL SYSTEMS OK</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MOSFET Actuator Stage (Real-Time Current & Power) -->
+          <div class="actuator-rack">
+            <div class="actuator-tile" id="act-high">
+              <div class="lamp-emitter lamp-white" id="lamp-high-beam">
+                <div class="lamp-filament"></div>
+              </div>
+              <div class="actuator-data">
+                <div class="act-title">High Beam LED <span class="pin-pill">PA8 (TIM1 PWM)</span></div>
+                <div class="act-stats">PWM: <strong id="val-pwm-high">100%</strong> • Power: <span id="val-pwr-high">38.4W</span></div>
+              </div>
+            </div>
+
+            <div class="actuator-tile" id="act-low">
+              <div class="lamp-emitter lamp-white-dim" id="lamp-low-beam">
+                <div class="lamp-filament"></div>
+              </div>
+              <div class="actuator-data">
+                <div class="act-title">Low Beam LED <span class="pin-pill">PA9 (TIM1 PWM)</span></div>
+                <div class="act-stats">PWM: <strong id="val-pwm-low">30%</strong> • Power: <span id="val-pwr-low">10.8W</span></div>
+              </div>
+            </div>
+
+            <div class="actuator-tile" id="act-fog">
+              <div class="lamp-emitter lamp-amber" id="lamp-fog">
+                <div class="lamp-filament"></div>
+              </div>
+              <div class="actuator-data">
+                <div class="act-title">Yellow Fog Lamp <span class="pin-pill">PA3 (MOSFET)</span></div>
+                <div class="act-stats">State: <strong id="val-state-fog">OFF</strong> • Power: <span id="val-pwr-fog">0.0W</span></div>
+              </div>
+            </div>
+
+            <div class="actuator-tile" id="act-buzzer">
+              <div class="lamp-emitter lamp-crimson" id="buzzer-visual">
+                <div class="lamp-filament"></div>
+              </div>
+              <div class="actuator-data">
+                <div class="act-title">Piezo Buzzer <span class="pin-pill">PB0 (GPIO)</span></div>
+                <div class="act-stats">Alarm: <strong id="val-state-buzzer">SILENT (0V)</strong></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- MIDDLE ROW: Interactive Sensors, Distance Physics & Oscilloscope -->
+    <section class="controls-telemetry-row">
+      
+      <!-- 1. Interactive Environmental & Physical Factor Sliders -->
+      <div class="iot-card calibration-card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="card-icon">⚡</span>
+            <span class="card-heading">Physical Factors & Continuous Dimming Calibration</span>
+          </div>
+          <span class="iot-badge badge-teal">Edge Sensor Layer</span>
+        </div>
+
+        <div class="card-content-stack">
+          
+          <!-- Continuous Distance Slider (Physics Factor) -->
+          <div class="sensor-slider-block">
+            <div class="slider-info-row">
+              <span class="sensor-name">🚗 Oncoming Vehicle Distance (Physics Inverse-Square Glare)</span>
+              <span class="sensor-metric" id="carDistSliderVal">400 m (Clear Road)</span>
+            </div>
+            <input type="range" id="carDistSlider" min="10" max="400" value="400" class="iot-range-slider slider-distance">
+            <div class="slider-ticks">
+              <span>10m (Passing)</span>
+              <span>100m (Graded Dim 40%)</span>
+              <span>250m (Graded Dim 80%)</span>
+              <span>400m (High Beam 100%)</span>
+            </div>
+          </div>
+
+          <!-- Ambient Light / Photodiode Slider -->
+          <div class="sensor-slider-block">
+            <div class="slider-info-row">
+              <span class="sensor-name">🔆 Front Photodiode Headlight Sensor (ADC1_IN1 / PA1)</span>
+              <span class="sensor-metric text-teal" id="glareSliderVal">450 ADC (12.4 Lux)</span>
+            </div>
+            <input type="range" id="glareSlider" min="0" max="4095" value="450" class="iot-range-slider">
+            <div class="sensor-preset-pills">
+              <button class="pill-btn" data-light="120">Pitch Dark Highway</button>
+              <button class="pill-btn" data-light="750">Suburban Streetlight</button>
+              <button class="pill-btn" data-light="2100">Approaching Sedan (Low-Beam)</button>
+              <button class="pill-btn" data-light="3850">Blinding High-Beam Glare</button>
+            </div>
+          </div>
+
+          <!-- Rain Sensor Slider (Weather Factor) -->
+          <div class="sensor-slider-block">
+            <div class="slider-info-row">
+              <span class="sensor-name">🌧️ Rain & Windshield Moisture Sensor (ADC1_IN2 / PA2)</span>
+              <span class="sensor-metric text-amber" id="rainSliderVal">0% (Dry Asphalt)</span>
+            </div>
+            <input type="range" id="rainSlider" min="0" max="100" value="0" class="iot-range-slider slider-rain">
+            <div class="sensor-preset-pills">
+              <button class="pill-btn" data-rain="0">Dry Clear</button>
+              <button class="pill-btn" data-rain="25">Light Mist</button>
+              <button class="pill-btn" data-rain="60">Heavy Rain (Fog Lamp Auto-ON)</button>
+              <button class="pill-btn" data-rain="95">Tropical Downpour</button>
+            </div>
+          </div>
+
+          <!-- Manual Driver Override Switch -->
+          <div class="override-box-strip">
+            <div class="override-meta">
+              <span class="override-title">Manual Driver Lock [PA0]</span>
+              <span class="override-desc">Forces Low-Beam safe mode via hardware interrupt switch</span>
+            </div>
+            <label class="iot-toggle-switch">
+              <input type="checkbox" id="manualOverrideToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2. Signal Processing Oscilloscope (Raw vs Moving-Average DSP) -->
+      <div class="iot-card scope-card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="card-icon">📈</span>
+            <span class="card-heading">Edge DSP Moving-Average Signal Filter</span>
+          </div>
+          <div class="scope-legend-cluster">
+            <span class="legend-chip"><span class="chip-color color-raw"></span> Raw Sensor (Noisy)</span>
+            <span class="legend-chip"><span class="chip-color color-filt"></span> Filtered DSP (Smooth)</span>
+            <span class="legend-chip"><span class="chip-color color-lim"></span> Glare Limit (1800)</span>
+          </div>
+        </div>
+
+        <div class="scope-screen-wrapper">
+          <canvas id="scopeCanvas" width="940" height="210"></canvas>
+        </div>
+
+        <div class="scope-meta-deck">
+          <div class="depth-picker-group">
+            <span class="picker-label">FILTER DEPTH (N):</span>
+            <div class="picker-buttons">
+              <button class="depth-opt-btn" data-depth="4">N=4</button>
+              <button class="depth-opt-btn" data-depth="8">N=8</button>
+              <button class="depth-opt-btn active" data-depth="16">N=16</button>
+              <button class="depth-opt-btn" data-depth="32">N=32</button>
+            </div>
+          </div>
+
+          <div class="scope-stat-pill">
+            <span class="stat-lbl">RAW ADC:</span>
+            <span class="stat-val text-amber" id="stat-raw-adc">450</span>
+          </div>
+          <div class="scope-stat-pill">
+            <span class="stat-lbl">FILTERED:</span>
+            <span class="stat-val text-teal" id="stat-filt-adc">450</span>
+          </div>
+          <div class="scope-stat-pill">
+            <span class="stat-lbl">SNR BOOST:</span>
+            <span class="stat-val text-emerald">+22.8 dB</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- BOTTOM ROW: IoT MQTT Cloud Feed, CAN-Bus Frames & Self-Diagnostics -->
+    <section class="telemetry-cloud-row">
+
+      <!-- 1. Live MQTT Telemetry Stream Terminal -->
+      <div class="iot-card telemetry-feed-card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="card-icon">📡</span>
+            <span class="card-heading">Live MQTT Telemetry Stream (JSON Telematics)</span>
+          </div>
+          <span class="iot-badge badge-teal">topic: v1/ecu/telemetry</span>
+        </div>
+        <div class="terminal-body">
+          <pre id="mqtt-terminal-stream">Connecting to MQTT WebSocket broker...</pre>
+        </div>
+      </div>
+
+      <!-- 2. Sensor Self-Diagnostics & Hardware Fault Injection Suite -->
+      <div class="iot-card diagnostics-card">
+        <div class="card-bar">
+          <div class="card-bar-left">
+            <span class="card-icon">🩺</span>
+            <span class="card-heading">Self-Diagnostic Engine & Fail-Safe Test Suite</span>
+          </div>
+          <span class="iot-badge badge-emerald" id="diag-badge-status">CIRCUITS OK</span>
+        </div>
+
+        <div class="diag-card-content">
+          <div class="fault-button-grid">
+            <button class="fault-action-btn" id="fault-photo-open" data-fault="PHOTO_OPEN">
+              <span class="btn-icon">🔌</span>
+              <span>Photodiode Open Circuit (&lt; 40 ADC)</span>
+            </button>
+            <button class="fault-action-btn" id="fault-photo-short" data-fault="PHOTO_SHORT">
+              <span class="btn-icon">⚡</span>
+              <span>Photodiode Rail Short (&gt; 4050 ADC)</span>
+            </button>
+            <button class="fault-action-btn" id="fault-rain-open" data-fault="RAIN_OPEN">
+              <span class="btn-icon">💧</span>
+              <span>Rain Sensor Disconnected</span>
+            </button>
+            <button class="fault-action-btn btn-clear-all" id="fault-clear" data-fault="NONE">
+              <span class="btn-icon">✓</span>
+              <span>Restore All Sensors (Healthy Mode)</span>
+            </button>
+          </div>
+
+          <!-- Real-Time Sensor Telemetry Table -->
+          <table class="iot-tele-table">
+            <thead>
+              <tr>
+                <th>Channel</th>
+                <th>Peripheral</th>
+                <th>Voltage</th>
+                <th>ADC Count</th>
+                <th>Diagnostic Health</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Photodiode Module</strong></td>
+                <td>ADC1_IN1 (PA1)</td>
+                <td id="tele-volt-photo">0.36 V</td>
+                <td id="tele-adc-photo">450</td>
+                <td><span class="table-badge badge-ok" id="badge-photo-health">HEALTHY [OK]</span></td>
+              </tr>
+              <tr>
+                <td><strong>Rain Sensor Plate</strong></td>
+                <td>ADC1_IN2 (PA2)</td>
+                <td id="tele-volt-rain">3.12 V</td>
+                <td id="tele-adc-rain">3890</td>
+                <td><span class="table-badge badge-ok" id="badge-rain-health">HEALTHY [OK]</span></td>
+              </tr>
+              <tr>
+                <td><strong>Manual Fail-Safe</strong></td>
+                <td>GPIO_IN (PA0)</td>
+                <td>3.30 V</td>
+                <td id="tele-switch-val">HIGH (1)</td>
+                <td><span class="table-badge badge-info" id="badge-switch-health">AUTOMATIC</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Bottom IoT State Flow Pipeline -->
+  <footer class="iot-footer-pipeline">
+    <div class="pipeline-flow">
+      <div class="flow-step" id="node-high-beam">
+        <span class="step-icon">🔆</span>
+        <div class="step-meta">
+          <span class="step-name">1. HIGH BEAM (100%)</span>
+          <span class="step-desc">Clear Road • Maximum 195m Reach</span>
+        </div>
+      </div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-step" id="node-dimming">
+        <span class="step-icon">🔅</span>
+        <div class="step-meta">
+          <span class="step-name">2. GRADED DIMMING</span>
+          <span class="step-desc">Approaching Vehicle (250m - 60m)</span>
+        </div>
+      </div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-step" id="node-low-beam">
+        <span class="step-icon">🛡️</span>
+        <div class="step-meta">
+          <span class="step-name">3. ANTI-GLARE LOW BEAM</span>
+          <span class="step-desc">Passing Vehicle (&lt; 60m)</span>
+        </div>
+      </div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-step" id="node-fog">
+        <span class="step-icon">🌧️</span>
+        <div class="step-meta">
+          <span class="step-name">4. WEATHER FOG ASSIST</span>
+          <span class="step-desc">Rain &gt; 35% • Yellow Fog Lamp ON</span>
+        </div>
+      </div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-step step-danger" id="node-failsafe">
+        <span class="step-icon">⚠️</span>
+        <div class="step-meta">
+          <span class="step-name">5. FAIL-SAFE LIMP HOME</span>
+          <span class="step-desc">Sensor Fault • Buzzer Beep • OLED Alert</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+/**
+ * AEGIS // IoT Telematics Cloud & Smart Vehicle ECU Logic Engine
+ * Physics-Driven Continuous Graded Dimming, Moving-Average DSP & Telemetry Feed
+ * + Full-Featured 50-Second Automated Video Explainer with Voiceover & Captions
+ */
+
+// ============================================================================
+// Global State & Simulation Constants
+// ============================================================================
+const CONSTANTS = {
+  ADC_MAX: 4095,              // 12-bit ADC
+  VOLTAGE_REF: 3.3,           // 3.3V Logic Rail
+  GLARE_THRESHOLD_HIGH: 1800, // Glare start cutoff
+  RAIN_THRESHOLD_PERCENT: 35, // Rain threshold for Yellow Fog Lamp
+  SENSOR_FAULT_MIN_ADC: 40,   // Open circuit lower limit
+  SENSOR_FAULT_MAX_ADC: 4050, // Short to rail upper limit
+};
+
+const SIM_STATE = {
+  // Physical Factors & Environment
+  ambientBaseADC: 450,
+  carDistance: 400,          // Meters (400m = clear, 10m = passing)
+  rainPercent: 0,
+  manualOverride: false,
+  activeFault: 'NONE',       // 'NONE', 'PHOTO_OPEN', 'PHOTO_SHORT', 'RAIN_OPEN'
+
+  // Physics-calculated values
+  currentRawLightADC: 450,
+  filteredLightADC: 450,
+  filterDepth: 16,
+  adcBuffer: new Array(32).fill(450),
+  bufferIndex: 0,
+
+  // ECU Actuator Outputs
+  pwmHighBeam: 100,          // 0 - 100%
+  pwmLowBeam: 30,            // 0 - 100%
+  stateFogLamp: false,
+  stateBuzzer: false,
+
+  // Calculated Telemetry
+  powerWatts: 24.5,
+  energySavedPercent: 64.2,
+  headlightReachMeters: 195,
+
+  // State Machine
+  currentState: 'STATE_HIGH_BEAM',
+  systemHealth: 'SYS_OK',
+
+  // Oscilloscope Waveform History
+  historyRaw: new Array(160).fill(450),
+  historyFiltered: new Array(160).fill(450),
+
+  // Traffic Simulation Loop
+  autoTrafficLoop: false,
+  oncomingSpeed: 2.8,
+  isTruck: false,
+  roadOffset: 0,
+  rainDrops: [],
+  soundEnabled: true
+};
+
+// ============================================================================
+// Web Audio API - Piezo Buzzer Synthesizer & Video Background Chords
+// ============================================================================
+class BuzzerAudioEngine {
+  constructor() {
+    this.ctx = null;
+  }
+
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
+    }
+  }
+
+  triggerBeep(freq = 2400, duration = 0.12) {
+    if (!SIM_STATE.soundEnabled) return;
+    this.init();
+    if (!this.ctx) return;
+
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, now);
+
+    gain.gain.setValueAtTime(0.06, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + duration);
+  }
+
+  playAmbientChord(freqs = [220, 277.18, 329.63], duration = 1.5) {
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+    const now = this.ctx.currentTime;
+    freqs.forEach(f => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, now);
+      gain.gain.setValueAtTime(0.015, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    });
+  }
+}
+
+const buzzerAudio = new BuzzerAudioEngine();
+
+// ============================================================================
+// Physics Engine & Continuous Graded Dimming Logic
+// ============================================================================
+function computePhysicsAndAdaptiveLighting() {
+  let baseLuxADC = SIM_STATE.ambientBaseADC;
+  
+  if (SIM_STATE.carDistance < 380) {
+    const glareFactor = SIM_STATE.isTruck ? 1.45 : 1.0;
+    const distNorm = Math.max(15, SIM_STATE.carDistance);
+    const addedGlare = (4800000 / Math.pow(distNorm + 30, 2)) * glareFactor;
+    baseLuxADC = Math.min(CONSTANTS.ADC_MAX, Math.round(SIM_STATE.ambientBaseADC + addedGlare));
+  }
+
+  if (SIM_STATE.activeFault === 'PHOTO_OPEN') {
+    baseLuxADC = 10;
+  } else if (SIM_STATE.activeFault === 'PHOTO_SHORT') {
+    baseLuxADC = 4090;
+  } else {
+    const jitter = (Math.random() - 0.5) * 20;
+    baseLuxADC = Math.max(0, Math.min(CONSTANTS.ADC_MAX, baseLuxADC + jitter));
+  }
+
+  SIM_STATE.currentRawLightADC = Math.round(baseLuxADC);
+
+  // Rolling Moving-Average Filter
+  SIM_STATE.adcBuffer[SIM_STATE.bufferIndex] = SIM_STATE.currentRawLightADC;
+  SIM_STATE.bufferIndex = (SIM_STATE.bufferIndex + 1) % SIM_STATE.filterDepth;
+
+  let sum = 0;
+  for (let i = 0; i < SIM_STATE.filterDepth; i++) {
+    sum += SIM_STATE.adcBuffer[i];
+  }
+  SIM_STATE.filteredLightADC = Math.round(sum / SIM_STATE.filterDepth);
+
+  // Scope History
+  SIM_STATE.historyRaw.push(SIM_STATE.currentRawLightADC);
+  SIM_STATE.historyRaw.shift();
+  SIM_STATE.historyFiltered.push(SIM_STATE.filteredLightADC);
+  SIM_STATE.historyFiltered.shift();
+
+  // Diagnostics
+  let health = 'SYS_OK';
+  if (SIM_STATE.activeFault === 'PHOTO_OPEN' || SIM_STATE.activeFault === 'PHOTO_SHORT' ||
+      SIM_STATE.currentRawLightADC < CONSTANTS.SENSOR_FAULT_MIN_ADC || 
+      SIM_STATE.currentRawLightADC > CONSTANTS.SENSOR_FAULT_MAX_ADC) {
+    health = 'FAULT_PHOTO';
+  } else if (SIM_STATE.activeFault === 'RAIN_OPEN') {
+    health = 'FAULT_RAIN';
+  }
+  SIM_STATE.systemHealth = health;
+
+  executeGradedECULogic();
+
+  const highWatts = (SIM_STATE.pwmHighBeam / 100) * 38.4;
+  const lowWatts  = (SIM_STATE.pwmLowBeam / 100) * 24.0;
+  const fogWatts  = SIM_STATE.stateFogLamp ? 21.6 : 0.0;
+  SIM_STATE.powerWatts = highWatts + lowWatts + fogWatts;
+
+  const saved = ((110.0 - SIM_STATE.powerWatts) / 110.0) * 100.0;
+  SIM_STATE.energySavedPercent = Math.max(0, saved);
+}
+
+function executeGradedECULogic() {
+  if (SIM_STATE.systemHealth !== 'SYS_OK') {
+    SIM_STATE.currentState = 'STATE_FAILSAFE';
+    SIM_STATE.pwmHighBeam = 0;
+    SIM_STATE.pwmLowBeam = 100;
+    SIM_STATE.headlightReachMeters = 45;
+    SIM_STATE.stateFogLamp = (SIM_STATE.rainPercent > CONSTANTS.RAIN_THRESHOLD_PERCENT);
+    SIM_STATE.stateBuzzer = true;
+
+    if (Math.random() < 0.04) {
+      buzzerAudio.triggerBeep(2400, 0.12);
+    }
+    return;
+  }
+
+  if (SIM_STATE.manualOverride) {
+    SIM_STATE.currentState = 'STATE_OVERRIDE';
+    SIM_STATE.pwmHighBeam = 0;
+    SIM_STATE.pwmLowBeam = 100;
+    SIM_STATE.headlightReachMeters = 45;
+    SIM_STATE.stateFogLamp = (SIM_STATE.rainPercent > CONSTANTS.RAIN_THRESHOLD_PERCENT);
+    SIM_STATE.stateBuzzer = false;
+    return;
+  }
+
+  SIM_STATE.stateBuzzer = false;
+  const isRaining = (SIM_STATE.rainPercent >= CONSTANTS.RAIN_THRESHOLD_PERCENT);
+  SIM_STATE.stateFogLamp = isRaining;
+
+  const d = SIM_STATE.carDistance;
+
+  if (d >= 260) {
+    if (isRaining) {
+      SIM_STATE.currentState = 'STATE_FOG_ACTIVE';
+      SIM_STATE.pwmHighBeam = 60;
+      SIM_STATE.pwmLowBeam = 100;
+      SIM_STATE.headlightReachMeters = 120;
+    } else {
+      SIM_STATE.currentState = 'STATE_HIGH_BEAM';
+      SIM_STATE.pwmHighBeam = 100;
+      SIM_STATE.pwmLowBeam = 30;
+      SIM_STATE.headlightReachMeters = 195;
+    }
+  } else if (d > 140) {
+    SIM_STATE.currentState = 'STATE_DIMMING';
+    const ratio = (d - 140) / (260 - 140);
+    SIM_STATE.pwmHighBeam = Math.round(50 + (ratio * 50));
+    SIM_STATE.pwmLowBeam  = Math.round(70 - (ratio * 40));
+    SIM_STATE.headlightReachMeters = Math.round(100 + (ratio * 95));
+  } else if (d > 50) {
+    SIM_STATE.currentState = 'STATE_DIMMING';
+    const ratio = (d - 50) / (140 - 50);
+    SIM_STATE.pwmHighBeam = Math.round(ratio * 50);
+    SIM_STATE.pwmLowBeam  = Math.round(100 - (ratio * 30));
+    SIM_STATE.headlightReachMeters = Math.round(55 + (ratio * 45));
+  } else {
+    SIM_STATE.currentState = 'STATE_LOW_BEAM';
+    SIM_STATE.pwmHighBeam = 0;
+    SIM_STATE.pwmLowBeam = 100;
+    SIM_STATE.headlightReachMeters = 45;
+  }
+}
+
+// ============================================================================
+// Canvas 1: Panoramic Road Driving Simulation
+// ============================================================================
+const roadCanvas = document.getElementById('roadCanvas');
+const roadCtx = roadCanvas.getContext('2d');
+
+for (let i = 0; i < 110; i++) {
+  SIM_STATE.rainDrops.push({
+    x: Math.random() * roadCanvas.width,
+    y: Math.random() * roadCanvas.height,
+    length: 8 + Math.random() * 12,
+    speed: 11 + Math.random() * 8
+  });
+}
+
+function renderNightRoadScene() {
+  const w = roadCanvas.width;
+  const h = roadCanvas.height;
+  const horizonY = h * 0.44;
+
+  const skyGrad = roadCtx.createLinearGradient(0, 0, 0, horizonY);
+  skyGrad.addColorStop(0, '#03060c');
+  skyGrad.addColorStop(1, '#080d16');
+  roadCtx.fillStyle = skyGrad;
+  roadCtx.fillRect(0, 0, w, horizonY);
+
+  roadCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+  for (let s = 0; s < 22; s++) {
+    const sx = ((s * 43) % w);
+    const sy = ((s * 19) % (horizonY - 10));
+    roadCtx.fillRect(sx, sy, 1.2, 1.2);
+  }
+
+  const groundGrad = roadCtx.createLinearGradient(0, horizonY, 0, h);
+  groundGrad.addColorStop(0, '#030509');
+  groundGrad.addColorStop(1, '#070b12');
+  roadCtx.fillStyle = groundGrad;
+  roadCtx.fillRect(0, horizonY, w, h - horizonY);
+
+  roadCtx.beginPath();
+  roadCtx.moveTo(w * 0.45, horizonY);
+  roadCtx.lineTo(w * 0.55, horizonY);
+  roadCtx.lineTo(w * 0.94, h);
+  roadCtx.lineTo(w * 0.06, h);
+  roadCtx.closePath();
+  roadCtx.fillStyle = '#101622';
+  roadCtx.fill();
+  roadCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+  roadCtx.lineWidth = 1.5;
+  roadCtx.stroke();
+
+  // High Beam Cone
+  if (SIM_STATE.pwmHighBeam > 0) {
+    const alpha = (SIM_STATE.pwmHighBeam / 100) * 0.75;
+    const highCone = roadCtx.createRadialGradient(w * 0.5, h, 20, w * 0.5, horizonY + 15, 360);
+    highCone.addColorStop(0, `rgba(255, 255, 255, ${alpha})`);
+    highCone.addColorStop(0.5, `rgba(224, 242, 254, ${alpha * 0.5})`);
+    highCone.addColorStop(1, 'rgba(224, 242, 254, 0)');
+    roadCtx.fillStyle = highCone;
+
+    roadCtx.beginPath();
+    roadCtx.moveTo(w * 0.46, horizonY + 4);
+    roadCtx.lineTo(w * 0.54, horizonY + 4);
+    roadCtx.lineTo(w * 0.95, h);
+    roadCtx.lineTo(w * 0.05, h);
+    roadCtx.closePath();
+    roadCtx.fill();
+  }
+
+  // Low Beam Cone
+  if (SIM_STATE.pwmLowBeam > 0) {
+    const alpha = (SIM_STATE.pwmLowBeam / 100) * 0.65;
+    const lowCone = roadCtx.createRadialGradient(w * 0.52, h, 10, w * 0.54, h * 0.72, 200);
+    lowCone.addColorStop(0, `rgba(240, 249, 255, ${alpha})`);
+    lowCone.addColorStop(0.7, `rgba(186, 230, 253, ${alpha * 0.35})`);
+    lowCone.addColorStop(1, 'rgba(186, 230, 253, 0)');
+    roadCtx.fillStyle = lowCone;
+
+    roadCtx.beginPath();
+    roadCtx.moveTo(w * 0.48, h * 0.58);
+    roadCtx.lineTo(w * 0.56, h * 0.58);
+    roadCtx.lineTo(w * 0.88, h);
+    roadCtx.lineTo(w * 0.22, h);
+    roadCtx.closePath();
+    roadCtx.fill();
+  }
+
+  // Yellow Fog Lamp Cone
+  if (SIM_STATE.stateFogLamp) {
+    const fogGlow = roadCtx.createRadialGradient(w * 0.5, h, 5, w * 0.5, h * 0.74, 175);
+    fogGlow.addColorStop(0, 'rgba(245, 158, 11, 0.7)');
+    fogGlow.addColorStop(0.5, 'rgba(245, 158, 11, 0.35)');
+    fogGlow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    roadCtx.fillStyle = fogGlow;
+
+    roadCtx.beginPath();
+    roadCtx.moveTo(w * 0.44, h * 0.66);
+    roadCtx.lineTo(w * 0.56, h * 0.66);
+    roadCtx.lineTo(w * 0.96, h);
+    roadCtx.lineTo(w * 0.04, h);
+    roadCtx.closePath();
+    roadCtx.fill();
+  }
+
+  // Dashed Centerline
+  SIM_STATE.roadOffset = (SIM_STATE.roadOffset + 4) % 36;
+  roadCtx.strokeStyle = 'rgba(248, 250, 252, 0.85)';
+  roadCtx.lineWidth = 2.5;
+  roadCtx.setLineDash([16, 20]);
+  roadCtx.lineDashOffset = -SIM_STATE.roadOffset;
+
+  roadCtx.beginPath();
+  roadCtx.moveTo(w * 0.5, horizonY);
+  roadCtx.lineTo(w * 0.5, h);
+  roadCtx.stroke();
+  roadCtx.setLineDash([]);
+
+  // Auto Traffic Motion
+  if (SIM_STATE.autoTrafficLoop && SIM_STATE.carDistance > 10) {
+    SIM_STATE.carDistance -= SIM_STATE.oncomingSpeed;
+    if (SIM_STATE.carDistance <= 10) {
+      SIM_STATE.carDistance = 400;
+    }
+    document.getElementById('carDistSlider').value = Math.round(SIM_STATE.carDistance);
+  }
+
+  // Draw Oncoming Vehicle & Glare
+  if (SIM_STATE.carDistance < 380) {
+    const distRatio = Math.max(0.05, (400 - SIM_STATE.carDistance) / 400);
+    const carScale = 0.08 + (distRatio * 0.92);
+    
+    const carX = (w * 0.44) - (distRatio * (w * 0.22));
+    const carY = horizonY + (distRatio * (h - horizonY - 35));
+    const carW = 58 * carScale;
+    const carH = 30 * carScale;
+
+    roadCtx.fillStyle = '#0a0e14';
+    roadCtx.fillRect(carX - carW / 2, carY - carH, carW, carH);
+    roadCtx.strokeStyle = '#1e293b';
+    roadCtx.strokeRect(carX - carW / 2, carY - carH, carW, carH);
+
+    const leftLightX = carX - (carW * 0.35);
+    const rightLightX = carX + (carW * 0.35);
+    const lightY = carY - (carH * 0.35);
+    const lightRadius = 3.5 * carScale + 1.5;
+
+    roadCtx.fillStyle = '#ffffff';
+    roadCtx.beginPath();
+    roadCtx.arc(leftLightX, lightY, lightRadius, 0, Math.PI * 2);
+    roadCtx.arc(rightLightX, lightY, lightRadius, 0, Math.PI * 2);
+    roadCtx.fill();
+
+    const flareMultiplier = SIM_STATE.isTruck ? 1.5 : 1.0;
+    const flareRadius = (20 + (distRatio * 170)) * flareMultiplier;
+
+    const flareGrad = roadCtx.createRadialGradient(carX, lightY, 2, carX, lightY, flareRadius);
+    flareGrad.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
+    flareGrad.addColorStop(0.2, 'rgba(224, 242, 254, 0.55)');
+    flareGrad.addColorStop(0.6, 'rgba(20, 184, 166, 0.18)');
+    flareGrad.addColorStop(1, 'rgba(20, 184, 166, 0)');
+    roadCtx.fillStyle = flareGrad;
+    roadCtx.beginPath();
+    roadCtx.arc(carX, lightY, flareRadius, 0, Math.PI * 2);
+    roadCtx.fill();
+  }
+
+  // Rain Streaks & Fog
+  if (SIM_STATE.rainPercent > 0) {
+    const rainDensity = SIM_STATE.rainPercent / 100;
+    roadCtx.strokeStyle = 'rgba(203, 213, 225, 0.35)';
+    roadCtx.lineWidth = 1.0;
+    roadCtx.beginPath();
+
+    for (let r = 0; r < SIM_STATE.rainDrops.length * rainDensity; r++) {
+      const drop = SIM_STATE.rainDrops[r];
+      roadCtx.moveTo(drop.x, drop.y);
+      roadCtx.lineTo(drop.x - 1.5, drop.y + drop.length);
+
+      drop.y += drop.speed;
+      drop.x -= 0.8;
+      if (drop.y > h) {
+        drop.y = -8;
+        drop.x = Math.random() * w;
+      }
+    }
+    roadCtx.stroke();
+
+    if (SIM_STATE.rainPercent > 30) {
+      const fogAlpha = (SIM_STATE.rainPercent - 30) / 100 * 0.4;
+      roadCtx.fillStyle = `rgba(148, 163, 184, ${fogAlpha})`;
+      roadCtx.fillRect(0, horizonY - 15, w, h - horizonY + 15);
+    }
+  }
+}
+
+// ============================================================================
+// Canvas 2: Signal Oscilloscope Plotter
+// ============================================================================
+const scopeCanvas = document.getElementById('scopeCanvas');
+const scopeCtx = scopeCanvas.getContext('2d');
+
+function renderOscilloscope() {
+  const w = scopeCanvas.width;
+  const h = scopeCanvas.height;
+
+  scopeCtx.fillStyle = '#02050a';
+  scopeCtx.fillRect(0, 0, w, h);
+
+  scopeCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  scopeCtx.lineWidth = 1;
+
+  for (let y = 0; y <= h; y += 35) {
+    scopeCtx.beginPath();
+    scopeCtx.moveTo(0, y);
+    scopeCtx.lineTo(w, y);
+    scopeCtx.stroke();
+  }
+
+  for (let x = 0; x <= w; x += 55) {
+    scopeCtx.beginPath();
+    scopeCtx.moveTo(x, 0);
+    scopeCtx.lineTo(x, h);
+    scopeCtx.stroke();
+  }
+
+  const threshY = h - ((CONSTANTS.GLARE_THRESHOLD_HIGH / CONSTANTS.ADC_MAX) * (h - 24) + 12);
+  scopeCtx.strokeStyle = 'rgba(239, 68, 68, 0.75)';
+  scopeCtx.setLineDash([4, 4]);
+  scopeCtx.lineWidth = 1.2;
+  scopeCtx.beginPath();
+  scopeCtx.moveTo(0, threshY);
+  scopeCtx.lineTo(w, threshY);
+  scopeCtx.stroke();
+  scopeCtx.setLineDash([]);
+
+  const adcToY = (adc) => h - ((adc / CONSTANTS.ADC_MAX) * (h - 26) + 13);
+  const stepX = w / (SIM_STATE.historyRaw.length - 1);
+
+  // Raw
+  scopeCtx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+  scopeCtx.lineWidth = 1.2;
+  scopeCtx.beginPath();
+  for (let i = 0; i < SIM_STATE.historyRaw.length; i++) {
+    const x = i * stepX;
+    const y = adcToY(SIM_STATE.historyRaw[i]);
+    if (i === 0) scopeCtx.moveTo(x, y);
+    else scopeCtx.lineTo(x, y);
+  }
+  scopeCtx.stroke();
+
+  // Filtered
+  scopeCtx.strokeStyle = '#14b8a6';
+  scopeCtx.lineWidth = 2.0;
+  scopeCtx.shadowColor = 'rgba(20, 184, 166, 0.5)';
+  scopeCtx.shadowBlur = 6;
+  scopeCtx.beginPath();
+  for (let i = 0; i < SIM_STATE.historyFiltered.length; i++) {
+    const x = i * stepX;
+    const y = adcToY(SIM_STATE.historyFiltered[i]);
+    if (i === 0) scopeCtx.moveTo(x, y);
+    else scopeCtx.lineTo(x, y);
+  }
+  scopeCtx.stroke();
+  scopeCtx.shadowBlur = 0;
+}
+
+// ============================================================================
+// UI Updates & MQTT Telemetry Feed Stream
+// ============================================================================
+let lastMQTTUpdate = 0;
+
+function updateIoTUI() {
+  const headerTag = document.getElementById('header-state-tag');
+  if (SIM_STATE.currentState === 'STATE_FAILSAFE') {
+    headerTag.textContent = 'FAIL-SAFE LIMP HOME';
+    headerTag.style.color = '#ef4444';
+  } else if (SIM_STATE.currentState === 'STATE_OVERRIDE') {
+    headerTag.textContent = 'MANUAL OVERRIDE LOCK';
+    headerTag.style.color = '#f59e0b';
+  } else if (SIM_STATE.currentState === 'STATE_DIMMING') {
+    headerTag.textContent = `GRADED DIMMING (${SIM_STATE.pwmHighBeam}%)`;
+    headerTag.style.color = '#14b8a6';
+  } else if (SIM_STATE.currentState === 'STATE_LOW_BEAM') {
+    headerTag.textContent = 'ANTI-GLARE LOW BEAM';
+    headerTag.style.color = '#38bdf8';
+  } else if (SIM_STATE.currentState === 'STATE_FOG_ACTIVE') {
+    headerTag.textContent = 'WEATHER FOG ASSIST ACTIVE';
+    headerTag.style.color = '#f59e0b';
+  } else {
+    headerTag.textContent = 'ADAPTIVE HIGH BEAM (100%)';
+    headerTag.style.color = '#10b981';
+  }
+
+  document.getElementById('badge-beam-mode').textContent = 
+    `HIGH: ${SIM_STATE.pwmHighBeam}% | LOW: ${SIM_STATE.pwmLowBeam}%`;
+
+  const weatherBadge = document.getElementById('badge-weather-mode');
+  if (SIM_STATE.rainPercent > 35) {
+    weatherBadge.textContent = `RAIN (${SIM_STATE.rainPercent}%)`;
+    weatherBadge.style.color = '#f59e0b';
+  } else {
+    weatherBadge.textContent = 'WEATHER: CLEAR';
+    weatherBadge.style.color = '';
+  }
+
+  const failsafeBadge = document.getElementById('badge-failsafe-mode');
+  if (SIM_STATE.currentState === 'STATE_FAILSAFE') failsafeBadge.classList.remove('hidden');
+  else failsafeBadge.classList.add('hidden');
+
+  const distEl = document.getElementById('hud-car-dist');
+  if (SIM_STATE.carDistance < 380) {
+    distEl.textContent = `${Math.round(SIM_STATE.carDistance)} m (Approaching)`;
+    distEl.style.color = '#14b8a6';
+  } else {
+    distEl.textContent = '-- m (Clear Road)';
+    distEl.style.color = '#fff';
+  }
+
+  const luxVal = (SIM_STATE.filteredLightADC * 0.028).toFixed(1);
+  document.getElementById('hud-glare-lux').textContent = `${SIM_STATE.filteredLightADC} ADC (${luxVal} Lux)`;
+  document.getElementById('hud-reach-dist').textContent = `${SIM_STATE.headlightReachMeters} meters`;
+  document.getElementById('hud-energy-saved').textContent = `${SIM_STATE.energySavedPercent.toFixed(1)}%`;
+
+  const now = new Date();
+  document.getElementById('oled-clock').textContent = now.toTimeString().split(' ')[0];
+
+  const oledStateLine = document.getElementById('oled-state-line');
+  const oledWeatherLine = document.getElementById('oled-weather-line');
+  const oledDiagLine = document.getElementById('oled-diag-line');
+
+  if (SIM_STATE.currentState === 'STATE_FAILSAFE') {
+    oledStateLine.textContent = 'BEAM: FAIL-SAFE LOW';
+    oledWeatherLine.textContent = (SIM_STATE.systemHealth === 'FAULT_PHOTO') ? 'ERR: PHOTO SENSOR' : 'ERR: RAIN SENSOR';
+    oledDiagLine.textContent = 'DIAG: SENSOR FAULT!';
+    oledDiagLine.className = 'oled-footer error-pulse';
+  } else if (SIM_STATE.currentState === 'STATE_OVERRIDE') {
+    oledStateLine.textContent = 'BEAM: MAN. OVERRIDE';
+    oledWeatherLine.textContent = 'MODE: DRIVER LOCK';
+    oledDiagLine.textContent = 'DIAGNOSTIC: ALL SYSTEMS OK';
+    oledDiagLine.className = 'oled-footer';
+  } else if (SIM_STATE.currentState === 'STATE_DIMMING') {
+    oledStateLine.textContent = `BEAM: DIMMING ${SIM_STATE.pwmHighBeam}%`;
+    oledWeatherLine.textContent = `DIST: ${Math.round(SIM_STATE.carDistance)}m`;
+    oledDiagLine.textContent = 'DIAGNOSTIC: ALL SYSTEMS OK';
+    oledDiagLine.className = 'oled-footer';
+  } else if (SIM_STATE.currentState === 'STATE_LOW_BEAM') {
+    oledStateLine.textContent = 'BEAM: LOW BEAM (100%)';
+    oledWeatherLine.textContent = (SIM_STATE.rainPercent > 35) ? 'MODE: RAIN + GLARE' : 'MODE: GLARE MITIG.';
+    oledDiagLine.textContent = 'DIAGNOSTIC: ALL SYSTEMS OK';
+    oledDiagLine.className = 'oled-footer';
+  } else {
+    oledStateLine.textContent = 'BEAM: HIGH BEAM (100%)';
+    oledWeatherLine.textContent = (SIM_STATE.rainPercent > 35) ? 'MODE: RAIN / FOG' : 'MODE: CLEAR / DRY';
+    oledDiagLine.textContent = 'DIAGNOSTIC: ALL SYSTEMS OK';
+    oledDiagLine.className = 'oled-footer';
+  }
+
+  const lightPct = Math.round((SIM_STATE.filteredLightADC / CONSTANTS.ADC_MAX) * 100);
+  document.getElementById('oled-bar-light').style.width = `${lightPct}%`;
+  document.getElementById('oled-bar-rain').style.width = `${SIM_STATE.rainPercent}%`;
+  document.getElementById('oled-bar-pwm').style.width = `${SIM_STATE.pwmHighBeam}%`;
+
+  const lampHigh = document.getElementById('lamp-high-beam');
+  const lampLow = document.getElementById('lamp-low-beam');
+  const lampFog = document.getElementById('lamp-fog');
+
+  document.getElementById('val-pwm-high').textContent = `${SIM_STATE.pwmHighBeam}%`;
+  document.getElementById('val-pwm-low').textContent = `${SIM_STATE.pwmLowBeam}%`;
+  document.getElementById('val-state-fog').textContent = SIM_STATE.stateFogLamp ? 'ON (100%)' : 'OFF';
+
+  document.getElementById('val-pwr-high').textContent = `${((SIM_STATE.pwmHighBeam / 100) * 38.4).toFixed(1)}W`;
+  document.getElementById('val-pwr-low').textContent = `${((SIM_STATE.pwmLowBeam / 100) * 24.0).toFixed(1)}W`;
+  document.getElementById('val-pwr-fog').textContent = SIM_STATE.stateFogLamp ? '21.6W' : '0.0W';
+
+  if (SIM_STATE.pwmHighBeam > 0) lampHigh.classList.add('active');
+  else lampHigh.classList.remove('active');
+
+  if (SIM_STATE.pwmLowBeam > 0) lampLow.classList.add('active');
+  else lampLow.classList.remove('active');
+
+  if (SIM_STATE.stateFogLamp) lampFog.classList.add('active');
+  else lampFog.classList.remove('active');
+
+  const buzzerVisual = document.getElementById('buzzer-visual');
+  const valStateBuzzer = document.getElementById('val-state-buzzer');
+  if (SIM_STATE.stateBuzzer) {
+    buzzerVisual.classList.add('active');
+    valStateBuzzer.textContent = 'ACTIVE BEEP (5V)';
+    valStateBuzzer.style.color = '#ef4444';
+  } else {
+    buzzerVisual.classList.remove('active');
+    valStateBuzzer.textContent = 'SILENT (0V)';
+    valStateBuzzer.style.color = '';
+  }
+
+  document.getElementById('stat-raw-adc').textContent = SIM_STATE.currentRawLightADC;
+  document.getElementById('stat-filt-adc').textContent = SIM_STATE.filteredLightADC;
+
+  const diagBadge = document.getElementById('diag-badge-status');
+  const photoHealth = document.getElementById('badge-photo-health');
+  const rainHealth = document.getElementById('badge-rain-health');
+
+  document.getElementById('tele-adc-photo').textContent = SIM_STATE.currentRawLightADC;
+  document.getElementById('tele-volt-photo').textContent = `${((SIM_STATE.currentRawLightADC / 4095) * 3.3).toFixed(2)} V`;
+
+  const rainADC = (SIM_STATE.activeFault === 'RAIN_OPEN') ? 10 : Math.round(4000 - (SIM_STATE.rainPercent * 37));
+  document.getElementById('tele-adc-rain').textContent = rainADC;
+  document.getElementById('tele-volt-rain').textContent = `${((rainADC / 4095) * 3.3).toFixed(2)} V`;
+
+  if (SIM_STATE.systemHealth === 'FAULT_PHOTO') {
+    diagBadge.textContent = 'SENSOR FAULT';
+    diagBadge.className = 'iot-badge badge-red';
+    photoHealth.textContent = 'FAULT: OUT OF BOUNDS';
+    photoHealth.className = 'table-badge badge-err';
+  } else {
+    photoHealth.textContent = 'HEALTHY [OK]';
+    photoHealth.className = 'table-badge badge-ok';
+  }
+
+  if (SIM_STATE.systemHealth === 'FAULT_RAIN') {
+    diagBadge.textContent = 'SENSOR FAULT';
+    diagBadge.className = 'iot-badge badge-red';
+    rainHealth.textContent = 'FAULT: DISCONNECTED';
+    rainHealth.className = 'table-badge badge-err';
+  } else {
+    rainHealth.textContent = 'HEALTHY [OK]';
+    rainHealth.className = 'table-badge badge-ok';
+  }
+
+  if (SIM_STATE.systemHealth === 'SYS_OK') {
+    diagBadge.textContent = 'CIRCUITS OK';
+    diagBadge.className = 'iot-badge badge-emerald';
+  }
+
+  const nodeHigh = document.getElementById('node-high-beam');
+  const nodeDimming = document.getElementById('node-dimming');
+  const nodeLow = document.getElementById('node-low-beam');
+  const nodeFog = document.getElementById('node-fog');
+  const nodeFailsafe = document.getElementById('node-failsafe');
+
+  [nodeHigh, nodeDimming, nodeLow, nodeFog, nodeFailsafe].forEach(n => n.classList.remove('active-step'));
+
+  if (SIM_STATE.currentState === 'STATE_FAILSAFE') nodeFailsafe.classList.add('active-step');
+  else if (SIM_STATE.currentState === 'STATE_FOG_ACTIVE') nodeFog.classList.add('active-step');
+  else if (SIM_STATE.currentState === 'STATE_LOW_BEAM') nodeLow.classList.add('active-step');
+  else if (SIM_STATE.currentState === 'STATE_DIMMING') nodeDimming.classList.add('active-step');
+  else nodeHigh.classList.add('active-step');
+
+  if (Date.now() - lastMQTTUpdate > 600) {
+    lastMQTTUpdate = Date.now();
+    const packet = {
+      timestamp: new Date().toISOString(),
+      node_id: "AEGIS-EDGE-042",
+      photodiode_adc: SIM_STATE.filteredLightADC,
+      rain_pct: SIM_STATE.rainPercent,
+      oncoming_dist_m: Math.round(SIM_STATE.carDistance),
+      pwm_high_pct: SIM_STATE.pwmHighBeam,
+      pwm_low_pct: SIM_STATE.pwmLowBeam,
+      fog_lamp_active: SIM_STATE.stateFogLamp,
+      power_draw_w: Number(SIM_STATE.powerWatts.toFixed(1)),
+      energy_saved_pct: Number(SIM_STATE.energySavedPercent.toFixed(1)),
+      ecu_health: SIM_STATE.systemHealth
+    };
+    document.getElementById('mqtt-terminal-stream').textContent = JSON.stringify(packet, null, 2);
+  }
+}
+
+// ============================================================================
+// CINEMA VIDEO ENGINE (50-Second Automated Video Presentation)
+// ============================================================================
+class AegisCinemaVideoEngine {
+  constructor() {
+    this.canvas = document.getElementById('videoCanvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.modal = document.getElementById('video-theater-modal');
+    this.captionText = document.getElementById('video-caption-text');
+    this.sceneTag = document.getElementById('video-scene-indicator');
+    this.timeDisplay = document.getElementById('video-time-display');
+    this.progressBar = document.getElementById('video-progress-fill');
+
+    this.isPlaying = false;
+    this.currentTime = 0;
+    this.totalDuration = 50; // 50 seconds video
+    this.lastFrameTime = 0;
+    this.currentChapterIndex = -1;
+    this.voiceEnabled = true;
+    this.captionsEnabled = true;
+
+    // MediaRecorder for Video Download
+    this.mediaRecorder = null;
+    this.recordedChunks = [];
+    this.isRecording = false;
+
+    // 5 Comprehensive Chapters with Script & Captions
+    this.chapters = [
+      {
+        startTime: 0,
+        endTime: 10,
+        tag: "CHAPTER 1: INTRODUCTION & NIGHTTIME GLARE HAZARDS",
+        caption: "Welcome to AEGIS — the Adaptive Electronic Glare Intelligence System powered by STM32 ARM Cortex-M4. Conventional high-beams blind oncoming traffic and cause dangerous nighttime accidents.",
+        narration: "Welcome to AEGIS, the Adaptive Electronic Glare Intelligence System powered by the STM32 ARM Cortex-M4 microcontroller. Conventional vehicle headlights cause severe glare and nighttime accidents because drivers forget or delay switching high beams to low beams.",
+        render: (t) => this.renderSceneIntro(t)
+      },
+      {
+        startTime: 10,
+        endTime: 20,
+        tag: "CHAPTER 2: CONTINUOUS GRADED DIMMING & MOVING-AVERAGE FILTER",
+        caption: "AEGIS detects oncoming headlights via forward photodiode. Using a windowed moving-average ADC filter, it smoothly grades high-beam PWM from 100% to 0% without flickering.",
+        narration: "AEGIS solves this using physics-based adaptive high beam assist. As an oncoming vehicle approaches, the forward photodiode reads light intensity using a windowed moving-average ADC filter, smoothly executing graded dimming from one hundred percent down to anti-glare low beam without flickering.",
+        render: (t) => this.renderSceneGradedDimming(t)
+      },
+      {
+        startTime: 20,
+        endTime: 30,
+        tag: "CHAPTER 3: WEATHER-ADAPTIVE FOG ILLUMINATION",
+        caption: "In rainy conditions, standard headlights produce severe light backscatter. The AEGIS rain sensor automatically triggers the Yellow Fog Lamp (PA3) for enhanced ground visibility.",
+        narration: "During adverse weather, standard headlights cause dangerous light backscatter. The AEGIS rain sensor automatically activates the dedicated yellow fog lamp while optimizing beam patterns for maximum visibility.",
+        render: (t) => this.renderSceneWeatherFog(t)
+      },
+      {
+        startTime: 30,
+        endTime: 40,
+        tag: "CHAPTER 4: SENSOR SELF-DIAGNOSTICS & FAIL-SAFE ENGINE",
+        caption: "If any sensor disconnects or shorts, the ECU immediately triggers Fail-Safe Mode: forcing Low Beam ON, sounding the Piezo Buzzer, and rendering OLED fault diagnostics.",
+        narration: "Unlike standard systems, AEGIS features a built-in Self-Diagnostic Engine. If a sensor is disconnected or shorts to rail, the system triggers Fail-Safe mode, forcing low beams, sounding the piezo buzzer, and alerting the driver on the OLED screen.",
+        render: (t) => this.renderSceneSelfDiagnostics(t)
+      },
+      {
+        startTime: 40,
+        endTime: 50,
+        tag: "CHAPTER 5: IoT CLOUD TELEMATICS & 64% ENERGY SAVINGS",
+        caption: "Live MQTT telematics stream packet metrics to the cloud while saving 64% power vs halogen lamps. AEGIS delivers intelligent, automotive-grade road safety.",
+        narration: "With live IoT telematics over MQTT and up to 64% energy savings compared to halogen lights, AEGIS delivers intelligent, automotive-grade road safety at an accessible cost.",
+        render: (t) => this.renderSceneIoTConclusion(t)
+      }
+    ];
+
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    document.getElementById('btn-open-video-modal').addEventListener('click', () => this.openTheater());
+    document.getElementById('btn-close-video-modal').addEventListener('click', () => this.closeTheater());
+    document.getElementById('theater-backdrop').addEventListener('click', () => this.closeTheater());
+
+    document.getElementById('btn-video-play-pause').addEventListener('click', () => this.togglePlayPause());
+    document.getElementById('btn-video-restart').addEventListener('click', () => this.restartVideo());
+
+    document.getElementById('btn-video-caption-toggle').addEventListener('click', (e) => {
+      this.captionsEnabled = !this.captionsEnabled;
+      e.target.textContent = this.captionsEnabled ? '💬 CC: ON' : '💬 CC: OFF';
+      document.querySelector('.theater-captions-box').style.display = this.captionsEnabled ? 'block' : 'none';
+    });
+
+    document.getElementById('btn-video-audio-toggle').addEventListener('click', (e) => {
+      this.voiceEnabled = !this.voiceEnabled;
+      e.target.textContent = this.voiceEnabled ? '🔊 Voiceover: ON' : '🔇 Voiceover: OFF';
+      if (!this.voiceEnabled) window.speechSynthesis.cancel();
+    });
+
+    document.getElementById('btn-download-video').addEventListener('click', () => this.recordAndDownloadVideo());
+
+    document.getElementById('video-progress-track').addEventListener('click', (e) => {
+      const rect = e.target.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      this.seekTo(ratio * this.totalDuration);
+    });
+  }
+
+  openTheater() {
+    this.modal.classList.remove('hidden');
+    this.restartVideo();
+  }
+
+  closeTheater() {
+    this.modal.classList.add('hidden');
+    this.isPlaying = false;
+    window.speechSynthesis.cancel();
+  }
+
+  restartVideo() {
+    this.currentTime = 0;
+    this.currentChapterIndex = -1;
+    window.speechSynthesis.cancel();
+    this.isPlaying = true;
+    this.lastFrameTime = performance.now();
+    document.getElementById('btn-video-play-pause').textContent = '⏸️ Pause';
+    requestAnimationFrame((t) => this.videoLoop(t));
+  }
+
+  togglePlayPause() {
+    this.isPlaying = !this.isPlaying;
+    document.getElementById('btn-video-play-pause').textContent = this.isPlaying ? '⏸️ Pause' : '▶️ Play';
+    if (!this.isPlaying) {
+      window.speechSynthesis.pause();
+    } else {
+      window.speechSynthesis.resume();
+      this.lastFrameTime = performance.now();
+      requestAnimationFrame((t) => this.videoLoop(t));
+    }
+  }
+
+  seekTo(time) {
+    this.currentTime = Math.max(0, Math.min(this.totalDuration, time));
+    this.currentChapterIndex = -1;
+    window.speechSynthesis.cancel();
+  }
+
+  speakChapterNarration(text) {
+    if (!this.voiceEnabled || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1.0;
+    utter.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const naturalVoice = voices.find(v => (v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha'))));
+    if (naturalVoice) utter.voice = naturalVoice;
+
+    window.speechSynthesis.speak(utter);
+    buzzerAudio.playAmbientChord([220, 277.18, 329.63], 2.0);
+  }
+
+  videoLoop(now) {
+    if (!this.isPlaying) return;
+
+    const dt = (now - this.lastFrameTime) / 1000;
+    this.lastFrameTime = now;
+    this.currentTime += dt;
+
+    if (this.currentTime >= this.totalDuration) {
+      this.currentTime = this.totalDuration;
+      this.isPlaying = false;
+      document.getElementById('btn-video-play-pause').textContent = '▶️ Replay';
+      if (this.isRecording) this.stopRecording();
+    }
+
+    // Determine current chapter
+    const chapterIdx = this.chapters.findIndex(c => (this.currentTime >= c.startTime && this.currentTime < c.endTime));
+    if (chapterIdx !== -1 && chapterIdx !== this.currentChapterIndex) {
+      this.currentChapterIndex = chapterIdx;
+      const ch = this.chapters[chapterIdx];
+      this.captionText.textContent = ch.caption;
+      this.sceneTag.textContent = ch.tag;
+      this.speakChapterNarration(ch.narration);
+    }
+
+    // Render Canvas scene for current chapter
+    if (chapterIdx !== -1) {
+      const ch = this.chapters[chapterIdx];
+      const localTime = this.currentTime - ch.startTime;
+      ch.render(localTime);
+    }
+
+    // Update Progress & Time Display
+    const pct = (this.currentTime / this.totalDuration) * 100;
+    this.progressBar.style.width = `${pct}%`;
+    const curMin = Math.floor(this.currentTime / 60).toString().padStart(2, '0');
+    const curSec = Math.floor(this.currentTime % 60).toString().padStart(2, '0');
+    this.timeDisplay.textContent = `${curMin}:${curSec} / 00:50`;
+
+    if (this.isPlaying) {
+      requestAnimationFrame((t) => this.videoLoop(t));
+    }
+  }
+
+  // ==========================================================================
+  // 5 Canvas Chapter Renderers (720p HD Graphics)
+  // ==========================================================================
+  renderSceneIntro(t) {
+    const ctx = this.ctx;
+    const w = 1280; const h = 720;
+
+    // Background Gradient
+    const bg = ctx.createLinearGradient(0, 0, w, h);
+    bg.addColorStop(0, '#04070d');
+    bg.addColorStop(1, '#0b121e');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, w, h);
+
+    // Title Badge
+    ctx.fillStyle = '#14b8a6';
+    ctx.font = 'bold 22px Outfit, sans-serif';
+    ctx.fillText('PROJECT BASED LEARNING • DEPT OF ECE (ACT) • CIT', 100, 100);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 48px Outfit, sans-serif';
+    ctx.fillText('AEGIS : Adaptive Electronic Glare Intelligence System', 100, 160);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '22px Plus Jakarta Sans, sans-serif';
+    ctx.fillText('Intelligent Automotive Headlight ECU powered by STM32 ARM Cortex-M4', 100, 205);
+
+    // Split Visual: The Problem (Blinding Glare) vs Solution (AEGIS ECU)
+    // Left Box: Conventional Hazard
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(100, 260, 500, 300);
+    ctx.fillRect(100, 260, 500, 300);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('❌ CONVENTIONAL HAZARD: MANUAL DELAY & GLARE', 120, 300);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '18px Plus Jakarta Sans';
+    ctx.fillText('• Drivers forget or delay switching High to Low beam', 120, 345);
+    ctx.fillText('• Severe glare causes temporary vision blindness', 120, 385);
+    ctx.fillText('• Direct cause of over 30% of nighttime road accidents', 120, 425);
+    ctx.fillText('• Simple light sensors flicker under streetlights', 120, 465);
+
+    // Right Box: AEGIS Architecture
+    ctx.fillStyle = 'rgba(20, 184, 166, 0.08)';
+    ctx.strokeStyle = 'rgba(20, 184, 166, 0.4)';
+    ctx.strokeRect(660, 260, 520, 300);
+    ctx.fillRect(660, 260, 520, 300);
+
+    ctx.fillStyle = '#14b8a6';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('🛡️ AEGIS SOLUTION: EMBEDDED REAL-TIME ECU', 680, 300);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '18px Plus Jakarta Sans';
+    ctx.fillText('• STM32F411 ARM Cortex-M4 Microcontroller Core', 680, 345);
+    ctx.fillText('• DSP Moving-Average ADC Filter (Anti-Flicker)', 680, 385);
+    ctx.fillText('• Continuous Physics-Based Graded Dimming (PWM)', 680, 425);
+    ctx.fillText('• Weather Fog Assist & Automatic Sensor Self-Diagnostics', 680, 465);
+  }
+
+  renderSceneGradedDimming(t) {
+    const ctx = this.ctx;
+    const w = 1280; const h = 720;
+
+    // Dark Road Background
+    ctx.fillStyle = '#050810';
+    ctx.fillRect(0, 0, w, h);
+
+    // Header Title
+    ctx.fillStyle = '#14b8a6';
+    ctx.font = 'bold 28px Outfit';
+    ctx.fillText('FEATURE 1: CONTINUOUS GRADED HIGH-BEAM DIMMING (PA8 / PA9 PWM)', 80, 70);
+
+    // Left Viewport: Road Perspective with Oncoming Car Approaching
+    const dist = Math.max(20, 380 - (t * 35));
+    const pwmHigh = (dist > 250) ? 100 : ((dist > 60) ? Math.round((dist - 60) / 190 * 100) : 0);
+    const pwmLow = 100 - pwmHigh;
+
+    ctx.fillStyle = '#0f1624';
+    ctx.fillRect(80, 110, 560, 460);
+    ctx.strokeStyle = 'rgba(20, 184, 166, 0.3)';
+    ctx.strokeRect(80, 110, 560, 460);
+
+    // Road lines & Oncoming Car
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(340, 240); ctx.lineTo(380, 240);
+    ctx.lineTo(600, 570); ctx.lineTo(120, 570);
+    ctx.fill();
+
+    // High Beam Cone on Road
+    if (pwmHigh > 0) {
+      const alpha = (pwmHigh / 100) * 0.7;
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.beginPath();
+      ctx.moveTo(350, 240); ctx.lineTo(370, 240);
+      ctx.lineTo(590, 570); ctx.lineTo(130, 570);
+      ctx.fill();
+    }
+
+    // Approaching Vehicle
+    const carY = 240 + ((380 - dist) / 360 * 240);
+    const carX = 330 - ((380 - dist) / 360 * 70);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(carX - 15, carY, 6, 0, Math.PI * 2);
+    ctx.arc(carX + 15, carY, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glare Glow
+    const glareRadius = 20 + ((380 - dist) / 360 * 80);
+    const grad = ctx.createRadialGradient(carX, carY, 2, carX, carY, glareRadius);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+    grad.addColorStop(1, 'rgba(20, 184, 166, 0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(carX, carY, glareRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Right Viewport: Live DSP Oscilloscope & Real-Time Moving Average
+    ctx.fillStyle = '#02050a';
+    ctx.fillRect(680, 110, 520, 460);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.strokeRect(680, 110, 520, 460);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 18px JetBrains Mono';
+    ctx.fillText(`DISTANCE: ${Math.round(dist)} m  |  GLARE: ${Math.round(4000 - dist * 9)} ADC`, 700, 150);
+    ctx.fillText(`HIGH-BEAM PWM: ${pwmHigh}%  |  LOW-BEAM PWM: ${pwmLow}%`, 700, 185);
+
+    // Waveform simulation
+    ctx.strokeStyle = '#f59e0b'; // Raw noisy
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < 480; i += 10) {
+      const y = 380 - Math.sin((i + t * 40) * 0.05) * 40 - (Math.random() * 20) - ((380 - dist) * 0.25);
+      if (i === 0) ctx.moveTo(700 + i, y); else ctx.lineTo(700 + i, y);
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = '#14b8a6'; // Filtered smooth
+    ctx.lineWidth = 3.5;
+    ctx.beginPath();
+    for (let i = 0; i < 480; i += 10) {
+      const y = 380 - Math.sin((i + t * 40) * 0.05) * 40 - ((380 - dist) * 0.25);
+      if (i === 0) ctx.moveTo(700 + i, y); else ctx.lineTo(700 + i, y);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = '14px JetBrains Mono';
+    ctx.fillText('— Raw Noisy ADC (Streetlights & Jitter)', 700, 510);
+    ctx.fillStyle = '#14b8a6';
+    ctx.fillText('— Filtered Output (Rolling Window N=16)', 700, 535);
+  }
+
+  renderSceneWeatherFog(t) {
+    const ctx = this.ctx;
+    const w = 1280; const h = 720;
+
+    ctx.fillStyle = '#060a12';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 28px Outfit';
+    ctx.fillText('FEATURE 2: WEATHER-ADAPTIVE RAIN DETECTION & FOG LIGHTING', 80, 70);
+
+    // Rain Simulation Overlay
+    ctx.strokeStyle = 'rgba(203, 213, 225, 0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    for (let i = 0; i < 150; i++) {
+      const rx = (i * 27 + t * 180) % w;
+      const ry = (i * 19 + t * 400) % 500 + 100;
+      ctx.moveTo(rx, ry);
+      ctx.lineTo(rx - 3, ry + 16);
+    }
+    ctx.stroke();
+
+    // Left Diagram: Rain Sensor ADC
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.strokeRect(80, 130, 540, 420);
+    ctx.fillRect(80, 130, 540, 420);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('🌧️ RAIN SENSOR MODULE (PA2 ADC)', 110, 175);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '18px Plus Jakarta Sans';
+    ctx.fillText('• Rain droplets create conductive moisture path', 110, 225);
+    ctx.fillText('• STM32 samples analog water resistance continuously', 110, 270);
+    ctx.fillText('• Rain Level > 35% triggers Weather Adaptation Mode', 110, 315);
+    ctx.fillText('• Cuts High-Beam ceiling to 60% (Prevents Backscatter)', 110, 360);
+    ctx.fillText('• Activates dedicated MOSFET Driver (PA3)', 110, 405);
+
+    // Right View: 12V Yellow Fog Lamp Output
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+    ctx.strokeRect(660, 130, 540, 420);
+    ctx.fillRect(660, 130, 540, 420);
+
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('🟡 12V YELLOW FOG LAMP EMITTER', 690, 175);
+
+    // Amber Glow Spotlight
+    const fogSpot = ctx.createRadialGradient(930, 340, 10, 930, 340, 140);
+    fogSpot.addColorStop(0, 'rgba(251, 191, 36, 0.95)');
+    fogSpot.addColorStop(0.5, 'rgba(245, 158, 11, 0.4)');
+    fogSpot.addColorStop(1, 'rgba(245, 158, 11, 0)');
+    ctx.fillStyle = fogSpot;
+    ctx.beginPath();
+    ctx.arc(930, 340, 140, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px JetBrains Mono';
+    ctx.fillText('FOG LAMP STATE: ACTIVE [100%]', 770, 500);
+  }
+
+  renderSceneSelfDiagnostics(t) {
+    const ctx = this.ctx;
+    const w = 1280; const h = 720;
+
+    ctx.fillStyle = '#0a0507';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 28px Outfit';
+    ctx.fillText('FEATURE 3: BUILT-IN SELF-DIAGNOSTIC ENGINE & FAIL-SAFE MODE', 80, 70);
+
+    // Left Box: Sensor Disconnect & Circuit Check
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+    ctx.strokeRect(80, 120, 540, 440);
+    ctx.fillRect(80, 120, 540, 440);
+
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('🩺 CIRCUIT HEALTH MONITORING', 110, 165);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '18px Plus Jakarta Sans';
+    ctx.fillText('• Monitors sensor valid bounds: 0.10V to 3.20V', 110, 215);
+    ctx.fillText('• Open Circuit Detection (< 40 ADC counts / 0.03V)', 110, 260);
+    ctx.fillText('• Short Circuit Detection (> 4050 ADC / 3.26V)', 110, 305);
+    ctx.fillText('• Prevents silent failure in dark roadways', 110, 350);
+
+    // Blinking Fault Banner
+    const isBlink = Math.floor(t * 3) % 2 === 0;
+    if (isBlink) {
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(110, 400, 480, 50);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 18px JetBrains Mono';
+      ctx.fillText('⚠️ FAULT DETECTED: PHOTODIODE OPEN', 130, 432);
+    }
+
+    // Right Box: Fail-Safe In-Dash OLED & Piezo Alarm
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = 'rgba(20, 184, 166, 0.4)';
+    ctx.strokeRect(660, 120, 540, 440);
+    ctx.fillRect(660, 120, 540, 440);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('📟 FAIL-SAFE ACTION ROUTINE', 690, 165);
+
+    // Virtual OLED Warning Box
+    ctx.fillStyle = '#02070e';
+    ctx.strokeStyle = '#ef4444';
+    ctx.strokeRect(710, 200, 440, 180);
+    ctx.fillRect(710, 200, 440, 180);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '16px JetBrains Mono';
+    ctx.fillText('AEGIS ECU // CIT-ACT', 730, 235);
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 20px JetBrains Mono';
+    ctx.fillText('ERR: SENSOR 1 DISCONNECT!', 730, 280);
+    ctx.fillStyle = '#34d399';
+    ctx.font = '16px JetBrains Mono';
+    ctx.fillText('SAFE MODE: LOW BEAM FORCED ON', 730, 325);
+    ctx.fillText('BUZZER: BEEPING (PB0 2.4kHz)', 730, 355);
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '17px Plus Jakarta Sans';
+    ctx.fillText('• Headlights never turn OFF in the dark', 710, 430);
+    ctx.fillText('• Automatically forces Low-Beam illumination', 710, 470);
+    ctx.fillText('• Driver alerted with Piezo sound and OLED screen', 710, 510);
+  }
+
+  renderSceneIoTConclusion(t) {
+    const ctx = this.ctx;
+    const w = 1280; const h = 720;
+
+    ctx.fillStyle = '#050912';
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#14b8a6';
+    ctx.font = 'bold 32px Outfit';
+    ctx.fillText('CONCLUSION: SMART IoT CONNECTED VEHICLE SAFETY', 80, 70);
+
+    // 3 Cards Layout: IoT Telematics, Energy Efficiency, Cost Advantage
+    // Card 1
+    ctx.fillStyle = 'rgba(20, 184, 166, 0.08)';
+    ctx.strokeStyle = 'rgba(20, 184, 166, 0.3)';
+    ctx.strokeRect(80, 120, 350, 430);
+    ctx.fillRect(80, 120, 350, 430);
+
+    ctx.fillStyle = '#14b8a6';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('📡 IoT TELEMATICS', 110, 165);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '16px Plus Jakarta Sans';
+    ctx.fillText('• Live MQTT data stream', 110, 215);
+    ctx.fillText('• CAN-Bus vehicle telemetry', 110, 255);
+    ctx.fillText('• Cloud fleet analytics', 110, 295);
+    ctx.fillText('• Real-time fault logging', 110, 335);
+
+    // Card 2
+    ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+    ctx.strokeRect(465, 120, 350, 430);
+    ctx.fillRect(465, 120, 350, 430);
+
+    ctx.fillStyle = '#10b981';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('⚡ 64% ENERGY SAVINGS', 495, 165);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '16px Plus Jakarta Sans';
+    ctx.fillText('• PWM Adaptive Duty Cycle', 495, 215);
+    ctx.fillText('• Replaces 110W Halogens', 495, 255);
+    ctx.fillText('• 38.4W Peak LED Draw', 495, 295);
+    ctx.fillText('• Extended battery lifetime', 495, 335);
+
+    // Card 3
+    ctx.fillStyle = 'rgba(245, 158, 11, 0.08)';
+    ctx.strokeStyle = 'rgba(245, 158, 11, 0.3)';
+    ctx.strokeRect(850, 120, 350, 430);
+    ctx.fillRect(850, 120, 350, 430);
+
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = 'bold 22px Outfit';
+    ctx.fillText('💰 LOW-COST RETROFIT', 880, 165);
+    ctx.fillStyle = '#f8fafc';
+    ctx.font = '16px Plus Jakarta Sans';
+    ctx.fillText('• Under ₹2,000 Total BOM', 880, 215);
+    ctx.fillText('• STM32F411 ARM Cortex-M4', 880, 255);
+    ctx.fillText('• Standard MOSFET drivers', 880, 295);
+    ctx.fillText('• Ideal for 2 & 4-wheelers', 880, 335);
+
+    // Bottom Banner
+    ctx.fillStyle = '#14b8a6';
+    ctx.font = 'bold 24px Outfit';
+    ctx.fillText('AEGIS : Improving Road Safety through Embedded Intelligence & IoT', 280, 600);
+  }
+
+  // ==========================================================================
+  // Video Recording & Export to File (.webm / .mp4)
+  // ==========================================================================
+  recordAndDownloadVideo() {
+    if (this.isRecording) return;
+    this.isRecording = true;
+    this.recordedChunks = [];
+
+    document.getElementById('recording-badge').classList.remove('hidden');
+
+    const stream = this.canvas.captureStream(30);
+    this.mediaRecorder = new MediaRecorder(stream, {
+      mimeType: MediaRecorder.isTypeSupported('video/webm; codecs=vp9') ? 'video/webm; codecs=vp9' : 'video/webm'
+    });
+
+    this.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) this.recordedChunks.push(e.data);
+    };
+
+    this.mediaRecorder.onstop = () => {
+      document.getElementById('recording-badge').classList.add('hidden');
+      const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'AEGIS_Project_Technical_Presentation.webm';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.isRecording = false;
+    };
+
+    this.mediaRecorder.start();
+    this.restartVideo();
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop();
+    }
+  }
+}
+
+let cinemaEngine = null;
+
+// ============================================================================
+// Event Handlers & User Controls
+// ============================================================================
+function setupEventListeners() {
+  const distSlider = document.getElementById('carDistSlider');
+  const distVal = document.getElementById('carDistSliderVal');
+  distSlider.addEventListener('input', (e) => {
+    SIM_STATE.carDistance = parseInt(e.target.value);
+    distVal.textContent = (SIM_STATE.carDistance >= 380) 
+      ? '400 m (Clear Road)' 
+      : `${SIM_STATE.carDistance} m (${SIM_STATE.carDistance < 60 ? 'Passing Zone' : 'Approaching'})`;
+  });
+
+  const glareSlider = document.getElementById('glareSlider');
+  const glareSliderVal = document.getElementById('glareSliderVal');
+  glareSlider.addEventListener('input', (e) => {
+    SIM_STATE.ambientBaseADC = parseInt(e.target.value);
+    const lux = (SIM_STATE.ambientBaseADC * 0.028).toFixed(1);
+    glareSliderVal.textContent = `${SIM_STATE.ambientBaseADC} ADC (${lux} Lux)`;
+  });
+
+  document.querySelectorAll('.pill-btn[data-light]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = parseInt(btn.dataset.light);
+      SIM_STATE.ambientBaseADC = val;
+      glareSlider.value = val;
+      const lux = (val * 0.028).toFixed(1);
+      glareSliderVal.textContent = `${val} ADC (${lux} Lux)`;
+    });
+  });
+
+  const rainSlider = document.getElementById('rainSlider');
+  const rainSliderVal = document.getElementById('rainSliderVal');
+  rainSlider.addEventListener('input', (e) => {
+    SIM_STATE.rainPercent = parseInt(e.target.value);
+    rainSliderVal.textContent = `${SIM_STATE.rainPercent}% (${SIM_STATE.rainPercent > 35 ? 'Fog Lamp Auto-Triggered' : 'Dry Asphalt'})`;
+  });
+
+  document.querySelectorAll('.pill-btn[data-rain]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = parseInt(btn.dataset.rain);
+      SIM_STATE.rainPercent = val;
+      rainSlider.value = val;
+      rainSliderVal.textContent = `${val}% (${val > 35 ? 'Fog Lamp Auto-Triggered' : 'Dry Asphalt'})`;
+    });
+  });
+
+  document.querySelectorAll('.depth-opt-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.depth-opt-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      SIM_STATE.filterDepth = parseInt(btn.dataset.depth);
+    });
+  });
+
+  document.querySelectorAll('.fault-action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.fault-action-btn').forEach(b => b.classList.remove('active-fault'));
+      const fault = btn.dataset.fault;
+      SIM_STATE.activeFault = fault;
+      if (fault !== 'NONE') {
+        btn.classList.add('active-fault');
+      }
+    });
+  });
+
+  document.getElementById('manualOverrideToggle').addEventListener('change', (e) => {
+    SIM_STATE.manualOverride = e.target.checked;
+  });
+
+  document.getElementById('btn-spawn-car').addEventListener('click', () => {
+    SIM_STATE.carDistance = 370;
+    SIM_STATE.isTruck = false;
+    distSlider.value = 370;
+  });
+
+  document.getElementById('btn-spawn-truck').addEventListener('click', () => {
+    SIM_STATE.carDistance = 370;
+    SIM_STATE.isTruck = true;
+    distSlider.value = 370;
+  });
+
+  const autoBtn = document.getElementById('btn-auto-traffic');
+  const autoLabel = document.getElementById('val-auto-traffic');
+  autoBtn.addEventListener('click', () => {
+    SIM_STATE.autoTrafficLoop = !SIM_STATE.autoTrafficLoop;
+    autoLabel.textContent = SIM_STATE.autoTrafficLoop ? 'ON' : 'OFF';
+    autoBtn.style.borderColor = SIM_STATE.autoTrafficLoop ? '#14b8a6' : '';
+    autoBtn.style.color = SIM_STATE.autoTrafficLoop ? '#14b8a6' : '';
+  });
+
+  document.getElementById('btn-pulse-streetlight').addEventListener('click', () => {
+    const original = SIM_STATE.ambientBaseADC;
+    SIM_STATE.ambientBaseADC = 3850;
+    glareSlider.value = 3850;
+
+    setTimeout(() => {
+      SIM_STATE.ambientBaseADC = original;
+      glareSlider.value = original;
+    }, 150);
+  });
+
+  const soundBtn = document.getElementById('sound-btn');
+  const soundLabel = document.getElementById('sound-label');
+  const soundIcon = document.getElementById('sound-icon');
+  soundBtn.addEventListener('click', () => {
+    SIM_STATE.soundEnabled = !SIM_STATE.soundEnabled;
+    soundLabel.textContent = SIM_STATE.soundEnabled ? 'Buzzer: ON' : 'Buzzer: OFF';
+    soundIcon.textContent = SIM_STATE.soundEnabled ? '🔊' : '🔇';
+    soundBtn.style.color = SIM_STATE.soundEnabled ? '' : '#ef4444';
+  });
+
+  document.getElementById('reset-all-btn').addEventListener('click', () => {
+    SIM_STATE.ambientBaseADC = 450;
+    SIM_STATE.carDistance = 400;
+    SIM_STATE.rainPercent = 0;
+    SIM_STATE.manualOverride = false;
+    SIM_STATE.activeFault = 'NONE';
+    SIM_STATE.autoTrafficLoop = false;
+    SIM_STATE.adcBuffer.fill(450);
+
+    distSlider.value = 400;
+    distVal.textContent = '400 m (Clear Road)';
+    glareSlider.value = 450;
+    glareSliderVal.textContent = '450 ADC (12.4 Lux)';
+    rainSlider.value = 0;
+    rainSliderVal.textContent = '0% (Dry Asphalt)';
+    document.getElementById('manualOverrideToggle').checked = false;
+    autoLabel.textContent = 'OFF';
+    autoBtn.style.borderColor = '';
+    autoBtn.style.color = '';
+    document.querySelectorAll('.fault-action-btn').forEach(b => b.classList.remove('active-fault'));
+  });
+}
+
+// ============================================================================
+// Main Simulation Animation Loop (60 FPS)
+// ============================================================================
+function mainLoop() {
+  computePhysicsAndAdaptiveLighting();
+  renderNightRoadScene();
+  renderOscilloscope();
+  updateIoTUI();
+  requestAnimationFrame(mainLoop);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  setupEventListeners();
+  cinemaEngine = new AegisCinemaVideoEngine();
+  requestAnimationFrame(mainLoop);
+});
+
+</script>
+</body>
+</html>
